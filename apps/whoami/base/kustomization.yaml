@@ -1,0 +1,23 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+labels:
+  - pairs:
+      app.kubernetes.io/name: whoami
+      app.kubernetes.io/part-of: k3s-lab
+    # Not includeSelectors: it would also rewrite the Traefik selector in the
+    # NetworkPolicy and silently block all traffic. Selectors are explicit instead.
+    includeSelectors: false
+    includeTemplates: true
+resources:
+  - serviceaccount.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+  - hpa.yaml
+  - pdb.yaml
+  - networkpolicy.yaml
+configMapGenerator:
+  - name: whoami-config
+    literals:
+      - WHOAMI_NAME=homelab

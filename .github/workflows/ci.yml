@@ -1,0 +1,41 @@
+---
+name: ci
+
+on:
+  push:
+  pull_request:
+
+env:
+  KUSTOMIZE_VERSION: "5.7.1"
+  KUBECONFORM_VERSION: "0.7.0"
+  K3D_VERSION: "v5.8.3"
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install kustomize and kubeconform
+        run: |
+          curl -fsSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" | tar xz
+          curl -fsSL "https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" | tar xz
+          sudo mv kustomize kubeconform /usr/local/bin/
+      - run: make validate
+
+  e2e:
+    # Spins up a real 3-node k3s cluster (k3d) and runs the smoke test against it.
+    needs: validate
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install k3d
+        run: curl -fsSL https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=${K3D_VERSION} bash
+      - run: make up
+      - run: kubectl wait --for=condition=Ready nodes --all --timeout=120s
+      - run: make deploy
+      - run: make test
+      - name: Debug output
+        if: failure()
+        run: |
+          kubectl get all,ingress,networkpolicy -A
+          kubectl -n lab describe pods
