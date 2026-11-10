@@ -1,0 +1,12 @@
+#cloud-config
+# k3s server (control plane). Rendered by Terraform, see compute.tf.
+runcmd:
+  # Ubuntu images on OCI ship an iptables policy that rejects everything except SSH.
+  - iptables -I INPUT 1 -s ${vcn_cidr} -j ACCEPT
+  - iptables -I INPUT 2 -p tcp --dport 80 -j ACCEPT
+  - iptables -I INPUT 3 -p tcp --dport 443 -j ACCEPT
+  - netfilter-persistent save
+  - >-
+    curl -sfL https://get.k3s.io |
+    INSTALL_K3S_VERSION='${k3s_version}' K3S_TOKEN='${token}'
+    sh -s - server --node-ip ${node_ip} --write-kubeconfig-mode 0600

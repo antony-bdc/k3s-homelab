@@ -1,1 +1,7 @@
 kubeconfig
+kubeconfig-oci
+infra/oci/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example

@@ -22,6 +22,24 @@ jobs:
           sudo mv kustomize kubeconform /usr/local/bin/
       - run: make validate
 
+  terraform:
+    # Static checks for the Oracle Cloud variant. No credentials in CI, so nothing is applied.
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: infra/oci
+    steps:
+      - uses: actions/checkout@v5
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+      - run: terraform fmt -check -recursive -diff
+      - run: terraform init -backend=false -input=false
+      - run: terraform validate
+      - uses: terraform-linters/setup-tflint@v4
+      - run: tflint --init
+      - run: tflint --format compact
+
   e2e:
     # Spins up a real 3-node k3s cluster (k3d) and runs the smoke test against it.
     needs: validate

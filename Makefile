@@ -1,4 +1,4 @@
-.PHONY: validate up deploy test down vm-up vm-down
+.PHONY: validate up deploy test down vm-up vm-down oci-up oci-kubeconfig oci-tunnel oci-down
 
 OVERLAY ?= lab
 
@@ -25,3 +25,16 @@ vm-up: ## real VMs with Multipass
 
 vm-down:
 	cluster/multipass/down.sh
+
+oci-up: ## same shape in Oracle Cloud (Always Free), see infra/oci
+	terraform -chdir=infra/oci init
+	terraform -chdir=infra/oci apply
+
+oci-kubeconfig:
+	scripts/oci-kubeconfig.sh
+
+oci-tunnel: ## keeps the Kubernetes API private
+	$$(terraform -chdir=infra/oci output -raw api_tunnel)
+
+oci-down:
+	terraform -chdir=infra/oci destroy

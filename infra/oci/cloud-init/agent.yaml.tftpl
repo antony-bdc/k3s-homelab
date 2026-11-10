@@ -1,0 +1,11 @@
+#cloud-config
+# k3s agent. Joins the server on its fixed private address; the installer retries until it is up.
+runcmd:
+  - iptables -I INPUT 1 -s ${vcn_cidr} -j ACCEPT
+  - iptables -I INPUT 2 -p tcp --dport 80 -j ACCEPT
+  - iptables -I INPUT 3 -p tcp --dport 443 -j ACCEPT
+  - netfilter-persistent save
+  - >-
+    curl -sfL https://get.k3s.io |
+    INSTALL_K3S_VERSION='${k3s_version}' K3S_URL='https://${server_ip}:6443' K3S_TOKEN='${token}'
+    sh -s - agent
