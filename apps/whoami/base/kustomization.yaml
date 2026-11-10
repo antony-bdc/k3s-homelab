@@ -4,7 +4,7 @@ kind: Kustomization
 labels:
   - pairs:
       app.kubernetes.io/name: whoami
-      app.kubernetes.io/part-of: k3s-lab
+      app.kubernetes.io/part-of: k3s-homelab
     # Not includeSelectors: it would also rewrite the Traefik selector in the
     # NetworkPolicy and silently block all traffic. Selectors are explicit instead.
     includeSelectors: false

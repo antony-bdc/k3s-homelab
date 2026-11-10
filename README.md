@@ -1,4 +1,4 @@
-# k3s-lab
+# k3s-homelab
 
 A 3-node Kubernetes lab with [k3s](https://k3s.io) and an app deployed the way it should be in production:
 non-root, network-isolated, autoscaled, and updated without dropping a single request.
@@ -59,4 +59,4 @@ full smoke test on a fresh k3d cluster.
 
 ## Possible next steps
 
-GitOps with Argo CD or Flux, and the [homelab-monitoring](https://github.com/businessantonybdc-crypto/homelab-monitoring) stack on the cluster via kube-prometheus-stack.
+GitOps with Argo CD or Flux, and the [observatory](https://github.com/antony-bdc/observatory) stack on the cluster via kube-prometheus-stack.
