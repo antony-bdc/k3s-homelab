@@ -7,7 +7,7 @@ CI builds a real cluster on every push and **proves** those properties with an e
 ```mermaid
 flowchart LR
     U((browser)) -->|whoami.localhost| T[Traefik ingress<br/>kube-system]
-    subgraph lab namespace · PSA restricted
+    subgraph lab["lab namespace · PSA restricted"]
       T -->|only allowed source| S[Service]
       S --> P1[pod] & P2[pod]
       H[HPA 2-6] -.-> P1 & P2
